@@ -1,5 +1,5 @@
-const client = require('../database/connect');
-const Message = require('../model/message');
+const client = require("../database/connect");
+const Message = require("../model/message");
 
 // Fonction pour ajouter un nouveau message
 const addMessage = async (req, res) => {
@@ -7,10 +7,14 @@ const addMessage = async (req, res) => {
   try {
     // Récupération des informations nécessaires depuis le corps de la requête
     const { content } = req.body;
+    console.log(req.userInfo.userId);
 
     // Vérification des paramètres
     if (!content || !req.userInfo.userId) {
-      return res.status(400).json({ error: 'Le contenu et l\'ID utilisateur sont requis pour ajouter un message.' });
+      return res.status(400).json({
+        error:
+          "Le contenu et l'ID utilisateur sont requis pour ajouter un message.",
+      });
     }
 
     // Création d'un nouveau message avec les informations de l'utilisateur
@@ -22,17 +26,21 @@ const addMessage = async (req, res) => {
     });
 
     // Sauvegarde du message dans la base de données
-    const result = await client.db().collection('messages').insertOne(message, { maxTimeMS: 30000 });
+    const result = await client
+      .db()
+      .collection("messages")
+      .insertOne(message, { maxTimeMS: 30000 });
 
     if (result) {
-      return res.status(201).json({ message: 'Message ajouté avec succès.' });
+      return res.status(201).json({ message: "Message ajouté avec succès." });
     } else {
-      throw new Error('Impossible d\'ajouter le message.');
+      throw new Error("Impossible d'ajouter le message.");
     }
-
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: 'Une erreur est survenue lors de l\'ajout du message.' });
+    return res
+      .status(500)
+      .json({ error: "Une erreur est survenue lors de l'ajout du message." });
   }
 };
 
@@ -40,16 +48,16 @@ const addMessage = async (req, res) => {
 const getAllMessages = async (req, res) => {
   try {
     // Récupération de tous les messages de la collection
-    const messages = await client.db().collection('messages').find().toArray();
+    const messages = await client.db().collection("messages").find().toArray();
 
     res.status(200).json(messages);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: 'Une erreur est survenue lors de la récupération des messages.' });
+    res.status(500).json({
+      error: "Une erreur est survenue lors de la récupération des messages.",
+    });
   }
 };
-
-
 
 // Fonction pour récupérer tous les messages d'un utilisateur
 const getMessageByUserId = async (req, res) => {
@@ -62,7 +70,10 @@ const getMessageByUserId = async (req, res) => {
     res.status(200).json(messages);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: 'Une erreur est survenue lors de la récupération des messages de l\'utilisateur.' });
+    res.status(500).json({
+      error:
+        "Une erreur est survenue lors de la récupération des messages de l'utilisateur.",
+    });
   }
 };
 
@@ -74,14 +85,21 @@ const deleteMessage = async (req, res) => {
     const result = await Message.deleteOne({ _id: id });
 
     if (result.deletedCount === 1) {
-      return res.status(200).json({ message: 'Message supprimé avec succès.' });
+      return res.status(200).json({ message: "Message supprimé avec succès." });
     } else {
-      throw new Error('Impossible de supprimer le message.');
+      throw new Error("Impossible de supprimer le message.");
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: 'Une erreur est survenue lors de la suppression du message.' });
+    res.status(500).json({
+      error: "Une erreur est survenue lors de la suppression du message.",
+    });
   }
 };
 
-module.exports = { addMessage, deleteMessage, getAllMessages, getMessageByUserId };
+module.exports = {
+  addMessage,
+  deleteMessage,
+  getAllMessages,
+  getMessageByUserId,
+};
